@@ -1,6 +1,9 @@
 pipeline {
     agent any
 
+ tools {
+        maven 'Maven-3'
+    }
     environment {
         GITHUB_IMAGE = "ghcr.io/chandrashekar528/docker-demo"
         IMAGE_TAG = "${BUILD_NUMBER}"
