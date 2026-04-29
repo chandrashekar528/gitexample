@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "your-dockerhub-username/docker-demo"
+        GITHUB_IMAGE = "ghcr.io/chandrashekar528/docker-demo"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/your-username/your-repo.git'
+                    url: 'https://github.com/chandrashekar528/gitexample.git'
             }
         }
 
@@ -24,24 +24,24 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} .
-                docker tag ${DOCKER_IMAGE}:${IMAGE_TAG} ${DOCKER_IMAGE}:latest
+                docker build -t ${GITHUB_IMAGE}:${IMAGE_TAG} .
+                docker tag ${GITHUB_IMAGE}:${IMAGE_TAG} ${GITHUB_IMAGE}:latest
                 """
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Push to GitHub Container Registry') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
+                    credentialsId: '74b841a5-7ac7-43ce-bcb1-eb2e0613d9be',
+                    usernameVariable: 'GITHUB_USER',
+                    passwordVariable: 'GITHUB_TOKEN'
                 )]) {
                     sh """
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    docker push ${DOCKER_IMAGE}:${IMAGE_TAG}
-                    docker push ${DOCKER_IMAGE}:latest
-                    docker logout
+                    echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USER --password-stdin
+                    docker push ${GITHUB_IMAGE}:${IMAGE_TAG}
+                    docker push ${GITHUB_IMAGE}:latest
+                    docker logout ghcr.io
                     """
                 }
             }
