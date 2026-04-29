@@ -23,7 +23,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh """
+                bat """
                 docker build -t ${GITHUB_IMAGE}:${IMAGE_TAG} .
                 docker tag ${GITHUB_IMAGE}:${IMAGE_TAG} ${GITHUB_IMAGE}:latest
                 """
@@ -37,7 +37,7 @@ pipeline {
                     usernameVariable: 'GITHUB_USER',
                     passwordVariable: 'GITHUB_TOKEN'
                 )]) {
-                    sh """
+                    bat """
                     echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USER --password-stdin
                     docker push ${GITHUB_IMAGE}:${IMAGE_TAG}
                     docker push ${GITHUB_IMAGE}:latest
